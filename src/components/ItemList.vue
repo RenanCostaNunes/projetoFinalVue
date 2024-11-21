@@ -1,8 +1,19 @@
 <template>
   <div>
     <h2>Lista de Itens</h2>
-    <ul v-if="items.length">
-      <li v-for="(item, index) in items" :key="item.id">
+    <div>
+      <label for="filter">Filtrar por Tipo de Medida:</label>
+      <select v-model="selectedFilter" id="filter">
+        <option value="">Todos</option>
+        <option value="KG">KG</option>
+        <option value="G">G</option>
+        <option value="MG">MG</option>
+        <option value="UN">UN</option>
+        <option value="CX">CX</option>
+      </select>
+    </div>
+    <ul v-if="filteredItems.length">
+      <li v-for="(item, index) in filteredItems" :key="item.id">
         <div v-if="editingIndex === index">
           <input v-model="editedItem.name" placeholder="Nome do Item" />
           <input v-model="editedItem.brand" placeholder="Marca" />
@@ -26,17 +37,19 @@
         </div>
       </li>
     </ul>
-    <p v-else>Sem itens adicionados.</p>
+    <p v-else>Sem itens adicionados ou encontrados para o filtro.</p>
+
     <router-link to="/">Voltar</router-link>
   </div>
 </template>
 
 <script>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted } from 'vue';
 
 export default {
   setup() {
     const items = ref([]);
+    const selectedFilter = ref('');
     const editingIndex = ref(null);
     const editedItem = reactive({
       name: '',
@@ -69,12 +82,21 @@ export default {
       localStorage.setItem('items', JSON.stringify(items.value));
     };
 
+    const filteredItems = computed(() => {
+      if (!selectedFilter.value) {
+        return items.value;
+      }
+      return items.value.filter((item) => item.unit === selectedFilter.value);
+    });
+
     onMounted(() => {
       loadItems();
     });
 
     return {
       items,
+      selectedFilter,
+      filteredItems,
       editingIndex,
       editedItem,
       startEdit,
