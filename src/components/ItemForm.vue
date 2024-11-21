@@ -6,6 +6,35 @@
         <label for="name" class="form-label">Nome do Item:</label>
         <input v-model="itemName" id="name" class="form-input" required />
       </div>
+
+      <div class="form-group">
+        <label for="brand" class="form-label">Marca do Item:</label>
+        <input v-model="itemBrand" id="brand" class="form-input" required />
+      </div>
+
+      <div class="form-group">
+        <label for="quantity" class="form-label">Quantidade:</label>
+        <input
+          v-model.number="itemQuantity"
+          id="quantity"
+          type="number"
+          class="form-input"
+          min="1"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="unit" class="form-label">Tipo de Medida:</label>
+        <select v-model="itemUnit" id="unit" class="form-input" required>
+          <option value="KG">KG</option>
+          <option value="G">G</option>
+          <option value="MG">MG</option>
+          <option value="UN">UN</option>
+          <option value="CX">CX</option>
+        </select>
+      </div>
+
       <button type="submit" class="submit-button">Adicionar Item</button>
     </form>
     <router-link to="/" class="back-button">Voltar</router-link>
@@ -16,22 +45,39 @@
 import { ref } from 'vue';
 
 export default {
-  setup(_, { emit }) {
+  setup() {
     const itemName = ref('');
+    const itemBrand = ref('');
+    const itemQuantity = ref(1);
+    const itemUnit = ref('UN');
 
     const addItem = () => {
       const items = JSON.parse(localStorage.getItem('items')) || [];
-      items.push({ id: Date.now(), name: itemName.value });
+      items.push({
+        id: Date.now(),
+        name: itemName.value,
+        brand: itemBrand.value,
+        quantity: itemQuantity.value,
+        unit: itemUnit.value,
+      });
       localStorage.setItem('items', JSON.stringify(items));
-      itemName.value = '';
-      alert('Item adicionado com sucesso!');
 
-      // Redirecionar para a homepage
-      window.location = "/"
+      // Limpar os campos
+      itemName.value = '';
+      itemBrand.value = '';
+      itemQuantity.value = 1;
+      itemUnit.value = 'UN';
+
+      // Feedback e redirecionamento
+      alert('Item adicionado com sucesso!');
+      window.location = '/';
     };
 
     return {
       itemName,
+      itemBrand,
+      itemQuantity,
+      itemUnit,
       addItem,
     };
   },
@@ -45,17 +91,22 @@ export default {
   align-items: center;
   padding: 20px;
   font-family: Arial, sans-serif;
+  background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  margin: 30px auto;
 }
 
 .title {
   font-size: 2rem;
   color: #333;
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .add-item-form {
   width: 100%;
-  max-width: 400px;
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -64,12 +115,12 @@ export default {
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 5px;
 }
 
 .form-label {
   font-size: 1rem;
   color: #555;
+  margin-bottom: 5px;
 }
 
 .form-input {
