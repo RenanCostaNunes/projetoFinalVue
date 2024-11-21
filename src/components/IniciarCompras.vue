@@ -10,8 +10,8 @@
       </li>
     </ul>
     <p v-else class="no-items">Nenhum item na lista de compras.</p>
-    <div v-if="items.length" class="actions">
-      <button @click="finalizePurchases" class="finalize-button">Finalizar Compras</button>
+    <div class="actions" :class="{ 'center-actions': !items.length }">
+      <button v-if="items.length" @click="finalizePurchases" class="finalize-button">Finalizar Compras</button>
       <router-link to="/" class="back-button">Voltar</router-link>
     </div>
   </div>
@@ -106,6 +106,10 @@ export default {
   margin-top: 20px;
   display: flex;
   justify-content: space-between;
+}
+
+.actions.center-actions {
+  justify-content: center;
 }
 
 .finalize-button {
